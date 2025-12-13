@@ -1,34 +1,51 @@
 from rest_framework import generics, permissions
-from .models import Profile, CareerPath, Recommendation
-from .serializers import ProfileSerializer, CareerPathSerializer, RecommendationSerializer
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 
-# --- Career Path view ---
+from .models import Profile, CareerPath, Recommendation
+from .serializers import (
+    ProfileSerializer,
+    CareerPathSerializer,
+    RecommendationSerializer
+)
+
+# --- Career Path Views ---
 
 class CareerPathListCreateView(generics.ListCreateAPIView):
     queryset = CareerPath.objects.all()
     serializer_class = CareerPathSerializer
+
+    # Anyone can view career paths, only authenticated users can create
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [IsAuthenticated()]
+        return [permissions.AllowAny()]
 
 
 class CareerPathDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CareerPath.objects.all()
     serializer_class = CareerPathSerializer
 
+    # Anyone can view, only authenticated users can update/delete
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'PATCH', 'DELETE']:
+            return [IsAuthenticated()]
+        return [permissions.AllowAny()]
 
-# Profile (User Profile) view
+# --- Profile (User Profile) View ---
 
 class ProfileDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        user = self.request.user
-        return Profile.objects.get(user=user)
+        return Profile.objects.get(user=self.request.user)
 
-# Recommendations list view
+# --- Recommendations List View ---
 
 class RecommendationListView(generics.ListAPIView):
     serializer_class = RecommendationSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        user = self.request.user
-        return Recommendation.objects.filter(user=user)
+        return Recommendation.objects.filter(user=self.request.user)
