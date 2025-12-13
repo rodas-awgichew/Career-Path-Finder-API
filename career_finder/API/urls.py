@@ -10,6 +10,8 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView
 )
 from .auth_views import RegisterView
+from .views import GenerateRecommendationsView
+
 
 urlpatterns = [
 
@@ -22,5 +24,11 @@ urlpatterns = [
 
     path('profile/', ProfileDetailView.as_view(), name='profile-detail'),
 
+    
     path('recommendations/', RecommendationListView.as_view(), name='recommendations-list'),
+ 
+ path(
+    'recommendations/generate/',GenerateRecommendationsView.as_view(),name='generate-recommendations'
+),
+
 ]

@@ -8,6 +8,11 @@ from .serializers import (
     CareerPathSerializer,
     RecommendationSerializer
 )
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .utils import calculate_match_score
+
 
 # --- Career Path Views ---
 
@@ -49,3 +54,33 @@ class RecommendationListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Recommendation.objects.filter(user=self.request.user)
+
+
+class GenerateRecommendationsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        profile = Profile.objects.get(user=user)
+
+        Recommendation.objects.filter(user=user).delete()
+
+        career_paths = CareerPath.objects.all()
+        created = []
+
+        for career in career_paths:
+            score = calculate_match_score(
+                profile.skills,
+                career.required_skills
+            )
+
+            if score > 0:
+                recommendation = Recommendation.objects.create(
+                    user=user,
+                    career_path=career,
+                    match_score=score
+                )
+                created.append(recommendation)
+
+        serializer = RecommendationSerializer(created, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
