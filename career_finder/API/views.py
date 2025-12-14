@@ -13,6 +13,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from .utils import calculate_match_score
 
+import logging
+from rest_framework import status
+from rest_framework.response import Response
+
+logger = logging.getLogger(__name__)
+
 
 # --- Career Path Views ---
 
@@ -44,7 +50,12 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        return Profile.objects.get(user=self.request.user)
+        try:
+            return Profile.objects.get(user=self.request.user)
+        except Profile.DoesNotExist:
+            logger.error(f"Profile not found for user {self.request.user.username}")
+            raise
+
 
 # --- Recommendations List View ---
 
@@ -53,6 +64,7 @@ class RecommendationListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        logger.info(f"Fetching recommendations for user {self.request.user.username}")
         return Recommendation.objects.filter(user=self.request.user)
 
 
@@ -61,7 +73,15 @@ class GenerateRecommendationsView(APIView):
 
     def post(self, request):
         user = request.user
-        profile = Profile.objects.get(user=user)
+
+        try:
+            profile = Profile.objects.get(user=user)
+        except Profile.DoesNotExist:
+            logger.error(f"Recommendation failed: profile missing for {user.username}")
+            return Response(
+                {"error": "User profile not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         Recommendation.objects.filter(user=user).delete()
 
@@ -69,18 +89,17 @@ class GenerateRecommendationsView(APIView):
         created = []
 
         for career in career_paths:
-            score = calculate_match_score(
-                profile.skills,
-                career.required_skills
-            )
-
+            score = calculate_match_score(profile.skills, career.required_skills)
             if score > 0:
-                recommendation = Recommendation.objects.create(
-                    user=user,
-                    career_path=career,
-                    match_score=score
+                created.append(
+                    Recommendation.objects.create(
+                        user=user,
+                        career_path=career,
+                        match_score=score
+                    )
                 )
-                created.append(recommendation)
+
+        logger.info(f"{len(created)} recommendations generated for {user.username}")
 
         serializer = RecommendationSerializer(created, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
