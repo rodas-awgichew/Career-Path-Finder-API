@@ -1,6 +1,10 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth.models import User
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+from django.http import Http404
+import logging
 
 from .models import Profile, CareerPath, Recommendation
 from .serializers import (
@@ -8,20 +12,10 @@ from .serializers import (
     CareerPathSerializer,
     RecommendationSerializer
 )
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from .utils import calculate_match_score
-
-from django.http import Http404
-import logging
-from rest_framework import status
-from rest_framework.response import Response
 
 from django_filters.rest_framework import DjangoFilterBackend  # added for filtering
 from rest_framework.filters import SearchFilter  # added for search functionality
-
 
 logger = logging.getLogger(__name__)
 
@@ -44,15 +38,20 @@ class CareerPathListCreateView(generics.ListCreateAPIView):
             return [IsAuthenticated()]
         return [permissions.AllowAny()]
 
+
 class CareerPathDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update, or delete a specific career path.
+    """
     queryset = CareerPath.objects.all()
     serializer_class = CareerPathSerializer
 
-    # Anyone can view, only authenticated users can update/delete
     def get_permissions(self):
+        # Restrict modification actions to authenticated users
         if self.request.method in ['PUT', 'PATCH', 'DELETE']:
             return [IsAuthenticated()]
         return [permissions.AllowAny()]
+
 
 # --- Profile (User Profile) View ---
 
@@ -71,9 +70,12 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
             raise Http404("Profile does not exist")  # improved explicit error handling
 
 
-# --- Recommendations List View ---
+# --- Recommendations Views ---
 
 class RecommendationListView(generics.ListAPIView):
+    """
+    Lists all recommendations generated for the authenticated user.
+    """
     serializer_class = RecommendationSerializer
     permission_classes = [IsAuthenticated]
 
@@ -83,6 +85,9 @@ class RecommendationListView(generics.ListAPIView):
 
 
 class GenerateRecommendationsView(APIView):
+    """
+    Generates personalized career recommendations based on user profile data.
+    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -97,7 +102,7 @@ class GenerateRecommendationsView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        Recommendation.objects.filter(user=user).delete()
+        Recommendation.objects.filter(user=user).delete()  # ensures recommendations stay up-to-date
 
         career_paths = CareerPath.objects.all()
         created = []
