@@ -8,14 +8,20 @@ from .serializers import (
     CareerPathSerializer,
     RecommendationSerializer
 )
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .utils import calculate_match_score
 
+from django.http import Http404
 import logging
 from rest_framework import status
 from rest_framework.response import Response
+
+from django_filters.rest_framework import DjangoFilterBackend  # added for filtering
+from rest_framework.filters import SearchFilter  # added for search functionality
+
 
 logger = logging.getLogger(__name__)
 
@@ -23,15 +29,20 @@ logger = logging.getLogger(__name__)
 # --- Career Path Views ---
 
 class CareerPathListCreateView(generics.ListCreateAPIView):
+    """
+    Lists all career paths and allows authenticated users to create new ones.
+    """
     queryset = CareerPath.objects.all()
     serializer_class = CareerPathSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]  # added filtering/search support
+    filterset_fields = ['category']  # allows filtering by category
+    search_fields = ['title', 'description', 'required_skills']  # enables keyword search
 
-    # Anyone can view career paths, only authenticated users can create
     def get_permissions(self):
+        # Only authenticated users can create career paths
         if self.request.method == 'POST':
             return [IsAuthenticated()]
         return [permissions.AllowAny()]
-
 
 class CareerPathDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CareerPath.objects.all()
@@ -46,6 +57,9 @@ class CareerPathDetailView(generics.RetrieveUpdateDestroyAPIView):
 # --- Profile (User Profile) View ---
 
 class ProfileDetailView(generics.RetrieveUpdateAPIView):
+    """
+    Allows an authenticated user to view and update their profile.
+    """
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
 
@@ -54,7 +68,7 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
             return Profile.objects.get(user=self.request.user)
         except Profile.DoesNotExist:
             logger.error(f"Profile not found for user {self.request.user.username}")
-            raise
+            raise Http404("Profile does not exist")  # improved explicit error handling
 
 
 # --- Recommendations List View ---
