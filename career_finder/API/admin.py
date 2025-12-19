@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import Profile, CareerPath, Recommendation
 
-# Register your models here.
+admin.site.register(Profile)
+admin.site.register(CareerPath)
+admin.site.register(Recommendation)
