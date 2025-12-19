@@ -2,7 +2,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from rest_framework.test import APITestCase
 from rest_framework import status
-from your_app.models import Profile, CareerPath, Recommendation
+from API.models import Profile, CareerPath, Recommendation
 
 
 class RecommendationAPITest(APITestCase):
