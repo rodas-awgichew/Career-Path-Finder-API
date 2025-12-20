@@ -80,8 +80,11 @@ class RecommendationListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        logger.info(f"Fetching recommendations for user {self.request.user.username}")
-        return Recommendation.objects.filter(user=self.request.user)
+        # select_related fetches the CareerPath data in the SAME query. 
+        return Recommendation.objects.filter(
+            user=self.request.user
+        ).select_related('career_path')
+
 
 
 class GenerateRecommendationsView(APIView):
