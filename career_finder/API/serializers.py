@@ -7,25 +7,21 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email']
 
-
 class ProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-
     class Meta:
         model = Profile
         fields = ['id', 'user', 'interests', 'skills', 'education_level', 'updated_at']
-
 
 class CareerPathSerializer(serializers.ModelSerializer):
     class Meta:
         model = CareerPath
         fields = '__all__'
 
-
 class RecommendationSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    career_path = CareerPathSerializer(read_only=True)
-
+    # Use nested serializers for detailed info
+    career_path_detail = CareerPathSerializer(source='career_path', read_only=True)
+    
     class Meta:
         model = Recommendation
-        fields = '__all__'
+        fields = ['id', 'career_path', 'career_path_detail', 'match_score', 'created_at']
