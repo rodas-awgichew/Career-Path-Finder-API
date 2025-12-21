@@ -1,7 +1,3 @@
-This is a clean, professional `README.md` file optimized for GitHub. It includes clear setup instructions, technology details, and an explanation of the core logic.
-
----
-
 # Career Path Finder API 🚀
 
 Developed by **Rodas Awgichew**, this is a robust Backend API built with **Django REST Framework**. It uses a matching algorithm to recommend career paths to users based on their unique skill sets.
