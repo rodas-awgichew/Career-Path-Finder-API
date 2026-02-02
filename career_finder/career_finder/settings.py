@@ -10,11 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -38,20 +38,27 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'django_filters',
-    'API'
+    'API',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+] 
 ROOT_URLCONF = 'career_finder.urls'
+
 
 TEMPLATES = [
     {
@@ -67,6 +74,14 @@ TEMPLATES = [
         },
     },
 ]
+
+# insert front-end build dir into template dirs (production serving)
+TEMPLATES[0]['DIRS'].insert(0, BASE_DIR / 'career-path-finder' / 'dist')
+STATICFILES_DIRS = [BASE_DIR / 'career-path-finder' / 'dist' / 'assets']
+
+
+STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'   # for collectstatic (production) 
 
 WSGI_APPLICATION = 'career_finder.wsgi.application'
 
