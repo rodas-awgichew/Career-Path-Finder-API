@@ -1,0 +1,5 @@
+{
+  "name": "Career Path Finder",
+  "description": "A modern, responsive React application that helps users find their ideal career path based on their skills and interests. It features personalized recommendations, a skills profiler, and a clean, intuitive interface.",
+  "requestFramePermissions": []
+}
