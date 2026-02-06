@@ -1,0 +1,26 @@
+
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+}
+
+export interface AuthTokens {
+  access: string;
+  refresh: string;
+}
+
+export interface UserProfile {
+  skills: string[];
+  interests: string[];
+}
+
+export interface Recommendation {
+  id: number;
+  career_path: {
+    id: number;
+    name: string;
+    description: string;
+  };
+  match_score: number;
+}
