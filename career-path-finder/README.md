@@ -71,7 +71,4 @@
   ## Next steps (optional)
   - Add a `Dockerfile` for the frontend build and serve stage
   - Add GitHub Actions for linting, type checks and deploy
-  - Add component-level tests (Jest/React Testing Library)
-
-  ---
-  If you'd like, I can also add a CI workflow, `Dockerfile`, or adapt this README to use `pnpm`/`yarn` instead of `npm`.
+  - Add component-level tests (Jest/React Testing Library.)
