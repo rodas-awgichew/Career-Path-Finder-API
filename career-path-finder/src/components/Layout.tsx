@@ -1,5 +1,4 @@
 
-import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { HomeIcon, BriefcaseIcon, UserIcon, LoginIcon, LogoutIcon } from './icons/Icons';
