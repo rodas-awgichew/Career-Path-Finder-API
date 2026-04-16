@@ -66,5 +66,4 @@
 
   ## Next steps (optional)
   - Add a `Dockerfile` for the frontend build and serve stage
-  - Add GitHub Actions for linting, type checks and deploy
 
