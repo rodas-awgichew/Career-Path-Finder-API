@@ -11,10 +11,13 @@ export interface AuthTokens {
 }
 
 export interface UserProfile {
+  id: number;
+  user: User;              
   skills: string[];
   interests: string[];
+  education_level: string; 
+  updated_at: string;      
 }
-
 export interface Recommendation {
   id: number;
   career_path: {

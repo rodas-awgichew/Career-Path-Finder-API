@@ -8,7 +8,8 @@ def home_view(request):
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('API.urls')),
-    path('', home_view),
-        re_path(r'^.*$', TemplateView.as_view(template_name='index.html'), name='frontend'),
+    path('api/', include('API.urls')),   # all API endpoints
+    path('', home_view),                 # simple homepage
+    re_path(r'^(?!api).*$', TemplateView.as_view(template_name='index.html'), name='frontend'),
 ]
+
