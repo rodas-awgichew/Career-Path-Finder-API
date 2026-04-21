@@ -19,35 +19,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const checkAuthStatus = useCallback(() => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem('accessToken');
-      if (token) {
-        // In a real app, you'd verify the token with the backend.
-        // For this mock, we'll just assume it's valid and create a mock user.
-        setUser({ id: 1, username: 'mockuser', email: 'user@example.com' });
-      } else {
-        setUser(null);
-      }
-    } catch (error) {
-      console.error("Failed to check auth status", error);
+  const checkAuthStatus = useCallback(async () => {
+  try {
+    setLoading(true);
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      const profile = await apiService.getProfile();
+      // Map profile.user into your User type
+      setUser(profile.user);
+    } else {
       setUser(null);
-    } finally {
-      setLoading(false);
     }
-  }, []);
+  } catch (error) {
+    console.error("Failed to fetch profile", error);
+    setUser(null);
+  } finally {
+    setLoading(false);
+  }
+}, []);
+
 
   useEffect(() => {
     checkAuthStatus();
   }, [checkAuthStatus]);
 
-  const login = async (credentials: any) => {
-    const tokens: AuthTokens = await apiService.login(credentials);
-    localStorage.setItem('accessToken', tokens.access);
-    localStorage.setItem('refreshToken', tokens.refresh);
-    checkAuthStatus();
-  };
+ const login = async (credentials: any) => {
+  const tokens: AuthTokens = await apiService.login(credentials);
+  localStorage.setItem("accessToken", tokens.access);
+  localStorage.setItem("refreshToken", tokens.refresh);
+  await checkAuthStatus();
+};
   
   const register = async (userInfo: any) => {
     await apiService.register(userInfo);

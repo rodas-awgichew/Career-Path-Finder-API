@@ -22,7 +22,8 @@ const RegisterPage = () => {
     try {
       await register({ username, email, password });
       // Log in the user automatically after successful registration
-      await login({ email, password });
+      await login({ username, password });
+
       navigate('/profile'); // Redirect to profile to fill skills
     } catch (err) {
       setError('Failed to create an account. Please try again.');
