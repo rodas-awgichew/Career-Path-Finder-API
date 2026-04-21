@@ -59,9 +59,6 @@
   - Run `npm run build` to produce the static `dist` folder.
   - Deploy `dist` to any static host (Netlify, Vercel, GitHub Pages) or serve it from a web server. If integrating with the Django backend, copy `dist` files into your static assets pipeline.
 
-  ## Troubleshooting
-  - Blank page or 404 on reload: ensure your static host is configured for SPA fallback to `index.html`.
-  - API errors: verify `VITE_API_BASE_URL` and backend CORS settings.
 
   ## Contributing
   - Create a branch for your feature/fix.
@@ -69,5 +66,4 @@
 
   ## Next steps (optional)
   - Add a `Dockerfile` for the frontend build and serve stage
-  - Add GitHub Actions for linting, type checks and deploy
 
