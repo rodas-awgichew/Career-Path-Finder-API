@@ -9,9 +9,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+
     class Meta:
         model = Profile
-        fields = ['id', 'user', 'interests', 'skills', 'education_level', 'updated_at']
+        fields = ['id', 'user', 'skills', 'interests', 'education_level', 'updated_at']
+
 
 class CareerPathSerializer(serializers.ModelSerializer):
     class Meta:
