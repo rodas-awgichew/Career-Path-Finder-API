@@ -12,14 +12,20 @@ class ProfileAPITest(APITestCase):
             username="testuser",
             password="testpass123"
         )
-        self.client.login(username="testuser", password="testpass123")
+        self.client.force_authenticate(user=self.user)
 
         # Create profile manually if not auto-created
-        self.profile = Profile.objects.create(
+        self.profile, created = Profile.objects.get_or_create(
             user=self.user,
-            skills="Python, Django",
-            education_level="Bachelor"
+            defaults={
+                'skills': "Python, Django",
+                'education_level': "Bachelor",
+            }
         )
+        if not created:
+            self.profile.skills = "Python, Django"
+            self.profile.education_level = "Bachelor"
+            self.profile.save()
 
         self.url = reverse("profile-detail")
 
