@@ -24,15 +24,27 @@ const RecommendationsPage = () => {
     }
   }, []);
 
+  const loadRecommendations = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      await apiService.generateRecommendations();
+      const data = await apiService.getRecommendations();
+      setRecommendations(data);
+    } catch (error) {
+      console.error("Failed to load recommendations", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
-    fetchRecommendations();
-  }, [fetchRecommendations]);
+    loadRecommendations();
+  }, [loadRecommendations]);
 
   const handleRecalculate = async () => {
     setIsGenerating(true);
     try {
       await apiService.generateRecommendations();
-      // After generation is triggered, refetch the recommendations
       await fetchRecommendations();
     } catch (error) {
       console.error("Failed to generate recommendations", error);
@@ -67,26 +79,33 @@ const RecommendationsPage = () => {
             </Card>
           ))}
         </div>
-      ) : (
+      ) : recommendations.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {recommendations.map((rec) => (
             <Card key={rec.id} className="flex flex-col">
               <CardHeader>
                 <div className="flex justify-between items-start gap-4">
                   <div>
-                    <CardTitle>{rec.career_path.name}</CardTitle>
-                    <CardDescription className="mt-2 text-primary font-semibold">Match Score</CardDescription>
+                    <CardTitle>{rec.career_path_detail?.title ?? 'Career path'}</CardTitle>
+                    <CardDescription className="mt-2 text-primary font-semibold">Match Score: {rec.match_score}%</CardDescription>
                   </div>
                   <CircularProgress value={rec.match_score} />
                 </div>
               </CardHeader>
               <CardContent className="flex-grow">
                 <p className="text-sm text-slate-600 dark:text-slate-300">
-                  {rec.career_path.description}
+                  {rec.career_path_detail?.description ?? 'No description available.'}
                 </p>
               </CardContent>
             </Card>
           ))}
+        </div>
+      ) : (
+        <div className="rounded-lg border border-dashed border-slate-300 dark:border-slate-600 p-8 text-center">
+          <p className="text-lg font-medium">No career matches found yet.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+            Your profile was saved, but no recommendations are available yet. Try pressing "Recalculate Matches".
+          </p>
         </div>
       )}
     </div>
