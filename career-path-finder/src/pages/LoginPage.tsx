@@ -7,7 +7,7 @@ import { Input } from '../components/ui/Input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -19,7 +19,7 @@ const LoginPage = () => {
     setIsLoading(true);
     setError('');
     try {
-      await login({ email, password });
+      await login({ username, password });
       navigate('/recommendations');
     } catch (err) {
       setError('Failed to login. Please check your credentials.');
@@ -40,14 +40,14 @@ const LoginPage = () => {
           <form onSubmit={handleSubmit}>
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <label htmlFor="email">Email</label>
+                <label htmlFor="email">username</label>
                 <Input
                   id="email"
-                  type="email"
-                  placeholder="m@example.com"
+                  type="text"
+                  placeholder="Enter your username"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   disabled={isLoading}
                 />
               </div>

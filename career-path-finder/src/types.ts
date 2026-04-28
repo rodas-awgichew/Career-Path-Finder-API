@@ -20,10 +20,17 @@ export interface UserProfile {
 }
 export interface Recommendation {
   id: number;
-  career_path: {
+  career_path: number;
+  career_path_detail: {
     id: number;
-    name: string;
+    title: string;
     description: string;
+    required_skills: string;
+    category: string;
+    min_salary: number;
+    max_salary: number;
+    difficulty_level: string;
+    created_at: string;
   };
   match_score: number;
 }

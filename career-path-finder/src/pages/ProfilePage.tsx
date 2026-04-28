@@ -7,27 +7,54 @@ import { Input } from '../components/ui/Input';
 import { Badge } from '../components/ui/Badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card';
 import { XIcon } from '../components/icons/Icons';
+import { useNavigate } from 'react-router-dom';
 
 const ProfilePage = () => {
-  const [profile, setProfile] = useState<UserProfile>({ skills: [], interests: [] });
+  const [profile, setProfile] = useState<UserProfile>({
+  id: 0,
+  user: { id: 0, username: '', email: '' },
+  skills: [],
+  interests: [],
+  education_level: '',
+  updated_at: '',
+});
+const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [skillInput, setSkillInput] = useState('');
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      setIsLoading(true);
-      try {
-        const data = await apiService.getProfile();
-        setProfile(data);
-      } catch (error) {
-        console.error("Failed to fetch profile", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchProfile();
-  }, []);
+  const fetchProfile = async () => {
+    setIsLoading(true);
+    try {
+      const data = await apiService.getProfile();
+
+      // Normalize data
+      const normalized = {
+        ...data,
+        skills: Array.isArray(data.skills)
+          ? data.skills
+          : data.skills
+          ? data.skills.split(',').map((s: string) => s.trim())
+          : [],
+        interests: Array.isArray(data.interests)
+          ? data.interests
+          : data.interests
+          ? data.interests.split(',').map((s: string) => s.trim())
+          : [],
+      };
+
+      setProfile(normalized);
+    } catch (error) {
+      console.error("Failed to fetch profile", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  fetchProfile();
+}, []);
+
+
 
   const handleSkillKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && skillInput.trim() !== '') {
@@ -49,8 +76,15 @@ const ProfilePage = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await apiService.updateProfile(profile);
-      // Add a success message/toast here in a real app
+      const payload = {
+        skills: profile.skills,
+        interests: profile.interests,
+        education_level: profile.education_level,
+      };
+
+      await apiService.updateProfile(payload);
+      await apiService.generateRecommendations();
+      navigate('/recommendations');
     } catch (error) {
       console.error("Failed to save profile", error);
     } finally {
@@ -79,7 +113,7 @@ const ProfilePage = () => {
                     {profile.skills.map((skill) => (
                       <Badge key={skill} variant="secondary" className="flex items-center gap-1">
                         {skill}
-                        <button onClick={() => removeSkill(skill)} className="rounded-full hover:bg-slate-400/20 p-0.5">
+                        <button title="Remove skill" onClick={() => removeSkill(skill)} className="rounded-full hover:bg-slate-400/20 p-0.5">
                           <XIcon className="w-3 h-3" />
                         </button>
                       </Badge>
