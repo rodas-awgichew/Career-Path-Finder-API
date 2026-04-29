@@ -63,7 +63,3 @@
   ## Contributing
   - Create a branch for your feature/fix.
   - Keep changes small and focused.
-
-  ## Next steps (optional)
-  - Add a `Dockerfile` for the frontend build and serve stage
-
