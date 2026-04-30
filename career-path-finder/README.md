@@ -62,4 +62,3 @@
 
   ## Contributing
   - Create a branch for your feature/fix.
-  - Keep changes small and focused.
