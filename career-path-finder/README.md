@@ -57,4 +57,4 @@
 
   ## Building & Deployment
   - Run `npm run build` to produce the static `dist` folder.
-  - Deploy `dist` to any static host (Netlify, Vercel, GitHub Pages) or serve it from a web server. If integrating with the Django backend, copy `dist` files into your static assets pipeline.
+  - Deploy `dist` to any static host (Netlify, Vercel, GitHub Pages) or serve it from a web server. 
